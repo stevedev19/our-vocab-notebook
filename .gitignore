@@ -2,3 +2,5 @@ node_modules/
 .firebase/
 *.log
 data/
+.vercel
+.env*
