@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f5fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Vocab" />
+  <title>Our Vocab Notebook · 우리 단어장</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">
+      <h1>Our Vocab Notebook</h1>
+      <p class="subtitle">우리 단어장</p>
+    </div>
+    <div class="top-actions">
+      <button id="streakBtn" class="streak-chip" aria-label="Daily streak — open stats">
+        <span class="flame" aria-hidden="true">🔥</span><span id="streakNum">0</span>
+      </button>
+      <button id="shareBtn" class="icon-btn" aria-label="Share link with partner" title="Share · 공유">🔗</button>
+      <button id="nameBtn" class="name-chip" aria-label="Set your name">
+        <span aria-hidden="true">👤</span><span id="nameLabel">Name</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="filters">
+    <nav class="tabs" role="tablist" aria-label="Filter words">
+      <button role="tab" class="tab" data-filter="all" aria-selected="true">All<small>전체</small><span class="count" data-count="all">0</span></button>
+      <button role="tab" class="tab" data-filter="ko" aria-selected="false"><span><i class="dot ko"></i>Korean</span><small>한국어</small><span class="count" data-count="ko">0</span></button>
+      <button role="tab" class="tab" data-filter="en" aria-selected="false"><span><i class="dot en"></i>English</span><small>영어</small><span class="count" data-count="en">0</span></button>
+      <button role="tab" class="tab" data-filter="learned" aria-selected="false">Learned<small>외운 단어</small><span class="count" data-count="learned">0</span></button>
+    </nav>
+    <div id="tagBar" class="tag-bar" aria-label="Filter by tag" hidden></div>
+  </div>
+
+  <main>
+    <div id="status" class="status" role="status">Connecting…</div>
+    <section id="recap" class="recap" hidden></section>
+    <ul id="wordList" class="word-list"></ul>
+
+    <div id="empty" class="empty" hidden>
+      <div class="empty-art" aria-hidden="true">📒<span>✨</span></div>
+      <h2 id="emptyTitle">Your notebook is empty</h2>
+      <p id="emptyText" class="muted">Add the first word you want to remember together.<br />함께 기억하고 싶은 첫 단어를 추가해 보세요.</p>
+      <button id="emptyAdd" class="btn btn-primary">＋ Add first word · 첫 단어 추가</button>
+    </div>
+
+    <div id="locked" class="empty" hidden>
+      <div class="empty-art" aria-hidden="true">🔒</div>
+      <h2>This notebook is private</h2>
+      <p class="muted">Open the full link your partner shared (it ends in <code>#k=…</code>).<br />파트너가 공유한 전체 링크로 열어 주세요.</p>
+    </div>
+  </main>
+
+  <div class="bottom-bar">
+    <button id="statsBtn" class="btn btn-secondary">📊<span>Stats<small>통계</small></span></button>
+    <button id="quizBtn" class="btn btn-secondary">🃏<span>Quiz<small>퀴즈</small></span></button>
+    <button id="addBtn" class="btn btn-primary">＋<span>Add<small>추가</small></span></button>
+  </div>
+
+  <!-- Add / edit word -->
+  <dialog id="wordDialog" class="sheet">
+    <form id="wordForm" method="dialog" autocomplete="off">
+      <div class="sheet-head">
+        <h2 id="wordDialogTitle">Add a word · 단어 추가</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close">✕</button>
+      </div>
+
+      <fieldset class="lang-pick">
+        <legend>Language of the word · 단어의 언어</legend>
+        <label><input type="radio" name="lang" value="ko" checked /> <span><i class="dot ko"></i>🇰🇷 Korean 한국어</span></label>
+        <label><input type="radio" name="lang" value="en" /> <span><i class="dot en"></i>🇺🇸 English 영어</span></label>
+      </fieldset>
+
+      <label class="field">
+        <span>Word · 단어</span>
+        <input name="term" required maxlength="200" enterkeyhint="next" />
+      </label>
+      <label class="field">
+        <span>Meaning / translation · 뜻</span>
+        <input name="meaning" required maxlength="500" enterkeyhint="next" />
+      </label>
+      <label class="field">
+        <span>Pronunciation <em>(optional)</em> · 발음</span>
+        <input name="pronunciation" maxlength="200" enterkeyhint="next" />
+      </label>
+      <label class="field">
+        <span>Example sentence <em>(optional)</em> · 예문</span>
+        <textarea name="example" rows="2" maxlength="1000"></textarea>
+      </label>
+      <label class="field">
+        <span>Tags <em>(optional, comma-separated)</em> · 태그</span>
+        <input name="tags" maxlength="200" placeholder="food, travel" enterkeyhint="done" />
+      </label>
+      <div id="tagSuggest" class="tag-suggest" aria-label="Tag suggestions"></div>
+
+      <p id="wordError" class="error" hidden></p>
+      <button type="submit" id="wordSubmit" class="btn btn-primary btn-block">Save word · 저장</button>
+    </form>
+  </dialog>
+
+  <!-- Name -->
+  <dialog id="nameDialog" class="sheet">
+    <form id="nameForm" method="dialog" autocomplete="off">
+      <div class="sheet-head">
+        <h2>Your name · 이름</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close">✕</button>
+      </div>
+      <p class="muted">Shown on words you add, reactions and stats — so you both know who did what.<br />단어, 반응, 통계에 표시돼요.</p>
+      <label class="field">
+        <span>Name · 이름</span>
+        <input name="name" maxlength="40" enterkeyhint="done" />
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Save · 저장</button>
+    </form>
+  </dialog>
+
+  <!-- Quiz -->
+  <dialog id="quizDialog" class="full">
+    <div class="full-inner">
+      <div class="sheet-head">
+        <h2>Flashcards · 플래시카드</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close quiz">✕</button>
+      </div>
+      <p id="quizMeta" class="muted quiz-meta"></p>
+      <div class="progress" aria-hidden="true"><div id="quizProgress"></div></div>
+
+      <div id="quizCard" class="flashcard">
+        <span id="quizLang" class="badge"></span>
+        <p id="quizTerm" class="flash-term"></p>
+        <p id="quizPron" class="flash-pron"></p>
+        <button id="quizSpeak" class="speak-btn big" aria-label="Play pronunciation">🔊 <span>Listen · 듣기</span></button>
+        <p id="quizHint" class="muted flash-hint">Tap to reveal · 탭해서 뜻 보기</p>
+        <div id="quizAnswer" class="flash-answer" hidden>
+          <p id="quizMeaning" class="flash-meaning"></p>
+          <p id="quizExample" class="flash-example"></p>
+          <p id="quizSrs" class="muted flash-srs"></p>
+        </div>
+      </div>
+
+      <div id="quizDone" class="quiz-done" hidden>
+        <div class="empty-art" aria-hidden="true">🎉</div>
+        <p id="quizDoneText"></p>
+      </div>
+
+      <div class="quiz-actions">
+        <button id="revealBtn" class="btn btn-primary btn-block">Reveal meaning · 뜻 보기</button>
+        <div id="gradeBtns" class="grade" hidden>
+          <button id="againBtn" class="btn btn-danger-soft">✗ Didn't know<small>몰랐어요</small></button>
+          <button id="knowBtn" class="btn btn-success">✓ Knew it<small>알았어요</small></button>
+        </div>
+        <div id="doneBtns" class="grade" hidden>
+          <button id="reviewLearnedBtn" class="btn btn-secondary">Review learned<small>외운 단어 복습</small></button>
+          <button id="restartBtn" class="btn btn-primary">Again<small>다시 하기</small></button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Stats -->
+  <dialog id="statsDialog" class="full">
+    <div class="full-inner scroll">
+      <div class="sheet-head">
+        <h2>Stats · 통계</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close stats">✕</button>
+      </div>
+      <div id="statsBody"></div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

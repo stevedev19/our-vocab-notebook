@@ -1,0 +1,5 @@
+{
+  "name": "our-vocab-notebook",
+  "private": true,
+  "scripts": { "start": "node server.js" }
+}
