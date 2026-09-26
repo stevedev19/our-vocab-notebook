@@ -1,9 +1,6 @@
 {
   "name": "our-vocab-notebook",
   "private": true,
-  "scripts": {
-    "start": "node server.js"
-  },
   "dependencies": {
     "mongodb": "^7.6.0"
   }
