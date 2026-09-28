@@ -1,6 +1,9 @@
 {
   "name": "our-vocab-notebook",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "mongodb": "^7.6.0"
   }
