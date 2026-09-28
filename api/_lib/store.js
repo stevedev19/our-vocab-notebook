@@ -42,6 +42,9 @@ async function loadDB() {
       { upsert: true }
     );
   }
+  // ACCESS_KEY (a Vercel env var) lets you choose the notebook's key, since
+  // there's no server console to print the generated one anymore.
+  if (process.env.ACCESS_KEY) db.key = process.env.ACCESS_KEY.trim();
   db.words = (db.words || []).map(normalize);
   db.activity = db.activity || {};
   db.version = db.version || 1;

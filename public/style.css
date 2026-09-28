@@ -374,6 +374,8 @@ main { max-width: 720px; margin: 0 auto; padding: 0 12px; }
 .empty { text-align: center; padding: 36px 16px 20px; }
 .empty h2 { font-size: 1.2rem; margin: 10px 0 6px; }
 .empty p { margin: 0 0 18px; }
+.key-form { display: flex; gap: 8px; max-width: 420px; margin: 0 auto; }
+.key-form input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--text); font: inherit; }
 .empty-art { position: relative; display: inline-block; font-size: 3.4rem; line-height: 1; }
 .empty-art span { position: absolute; right: -18px; top: -8px; font-size: 1.4rem; }
 
