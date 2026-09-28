@@ -234,7 +234,10 @@ async function connect() {
         localStorage.removeItem(ACCESS_KEY);
         return showLocked();
       }
-      if (!res.ok && res.status !== 204) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok && res.status !== 204) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
       statusEl.classList.remove("offline");
       statusEl.textContent = "● Live — synced with your partner · 실시간 동기화";
       if (res.status === 200) {
@@ -242,10 +245,12 @@ async function connect() {
         version = state.version;
         setState(state);
       }
-    } catch {
+      await new Promise((r) => setTimeout(r, 2000)); // poll, don't hammer the API
+    } catch (err) {
+      console.error("Sync failed:", err);
       statusEl.classList.add("offline");
-      statusEl.textContent = "Reconnecting… · 다시 연결 중";
-      await new Promise((r) => setTimeout(r, 2000));
+      statusEl.textContent = `Reconnecting… · 다시 연결 중 (${err.message})`;
+      await new Promise((r) => setTimeout(r, 3000));
     }
   }
 }

@@ -19,8 +19,12 @@ function getClient() {
     if (!uri) {
       throw new Error("MONGODB_URI environment variable is not set");
     }
-    const client = new MongoClient(uri);
-    clientPromise = client.connect();
+    // Fail fast instead of hanging until Vercel's function timeout.
+    const client = new MongoClient(uri, { serverSelectionTimeoutMS: 8000 });
+    clientPromise = client.connect().catch((err) => {
+      clientPromise = null; // let the next request retry instead of reusing the failure
+      throw err;
+    });
   }
   return clientPromise;
 }

@@ -7,7 +7,13 @@ const { loadDB } = require("./_lib/store");
 const { keyOk } = require("./_lib/logic");
 
 module.exports = async (req, res) => {
-  const db = await loadDB();
+  let db;
+  try {
+    db = await loadDB();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: `Database unavailable: ${err.message}` });
+  }
   const key = req.headers["x-key"] || req.query.k;
   if (!keyOk(key, db.key)) {
     return res.status(401).json({ error: "Missing or wrong access key — ask your partner for the link." });
