@@ -229,7 +229,11 @@ async function connect() {
         cache: "no-store",
         signal: AbortSignal.timeout(35_000),
       });
-      if (res.status === 401) return showLocked();
+      if (res.status === 401) {
+        // Don't keep retrying a wrong or outdated key on every visit.
+        localStorage.removeItem(ACCESS_KEY);
+        return showLocked();
+      }
       if (!res.ok && res.status !== 204) throw new Error(`HTTP ${res.status}`);
       statusEl.classList.remove("offline");
       statusEl.textContent = "● Live — synced with your partner · 실시간 동기화";
@@ -254,6 +258,16 @@ function showLocked() {
   $("#streakBtn").hidden = true;
   $("#shareBtn").hidden = true;
 }
+
+$("#keyForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const raw = $("#keyInput").value.trim();
+  const key = new URLSearchParams(raw.split("#")[1] || "").get("k") || raw;
+  if (!key) return;
+  localStorage.setItem(ACCESS_KEY, key);
+  location.hash = `k=${key}`;
+  location.reload();
+});
 
 // ---------- Rendering: list ----------
 function render() {

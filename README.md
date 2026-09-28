@@ -3,7 +3,18 @@
 A shared, live-synced Korean ⇄ English vocabulary notebook for two people.
 No dependencies — just Node 18+.
 
-## Run
+## Access key (Vercel)
+
+The notebook is locked by a secret key that goes in the link: `https://<your-app>.vercel.app/#k=<key>`.
+Pick a key yourself: add an `ACCESS_KEY` environment variable in Vercel
+(Project → Settings → Environment Variables), redeploy, then open
+`https://<your-app>.vercel.app/#k=<that key>` and share that whole link.
+Without `ACCESS_KEY`, a random key is generated and stored in MongoDB
+(`vocabapp.store`, document `vocab:db`, field `data.key`).
+
+If you see "This notebook is private", paste the link or key into the box on that screen.
+
+## Run locally (legacy)
 
 ```sh
 npm start              # or: node server.js   (PORT=3000 by default)
