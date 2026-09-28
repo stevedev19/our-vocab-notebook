@@ -1,7 +1,8 @@
+const handle = require("../../_lib/handle");
 const { loadDB, saveDB } = require("../../_lib/store");
 const { keyOk, setLearned } = require("../../_lib/logic");
 
-module.exports = async (req, res) => {
+module.exports = handle(async (req, res) => {
   const db = await loadDB();
   const key = req.headers["x-key"] || req.query.k;
   if (!keyOk(key, db.key)) {
@@ -18,4 +19,4 @@ module.exports = async (req, res) => {
   setLearned(w, b.learned, b.by, b.day, db.activity);
   await saveDB(db);
   res.status(200).json(w);
-};
+});
